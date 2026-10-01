@@ -1,0 +1,32 @@
+{
+  "name": "octanerpg-bot",
+  "version": "2.45.0",
+  "description": "OctaneRPG Discord Bot",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node bot.js",
+    "test": "node --test tests/*.test.js"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.87",
+    "@supabase/supabase-js": "^2.99.0",
+    "axios": "^1.7.2",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "luxon": "^3.4.4",
+    "winston": "^3.13.1",
+    "winston-daily-rotate-file": "^5.0.0"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "gaming",
+    "racing"
+  ],
+  "author": "AstroNay",
+  "license": "UNLICENSED"
+}

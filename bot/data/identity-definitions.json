@@ -1,0 +1,436 @@
+{
+  "titles": [
+    {
+      "id": "rookie",
+      "name": "Rookie",
+      "description": "Just getting started",
+      "requirement": { "type": "default" }
+    },
+    {
+      "id": "street_racer",
+      "name": "Street Racer",
+      "description": "Earned respect on the streets",
+      "requirement": { "type": "streetCred", "value": 500 }
+    },
+    {
+      "id": "circuit_king",
+      "name": "Circuit King",
+      "description": "Dominated the racing circuit",
+      "requirement": { "type": "streetCred", "value": 1500 }
+    },
+    {
+      "id": "legend",
+      "name": "Legend",
+      "description": "A living legend of the streets",
+      "requirement": { "type": "streetCred", "value": 5000 }
+    },
+    {
+      "id": "crew_loyalist",
+      "name": "Crew Loyalist",
+      "description": "Dedicated to the crew",
+      "requirement": { "type": "badge", "badgeId": "crew_supporter" }
+    },
+    {
+      "id": "outlaw",
+      "name": "Outlaw",
+      "description": "Feared in the underground",
+      "requirement": { "type": "infamy", "value": 500 }
+    },
+    {
+      "id": "crime_lord",
+      "name": "Crime Lord",
+      "description": "Rules the criminal underworld",
+      "requirement": { "type": "infamy", "value": 2500 }
+    },
+    {
+      "id": "kingpin",
+      "name": "Kingpin",
+      "description": "Master of both worlds",
+      "requirement": { "type": "dual", "streetCred": 3000, "infamy": 3000 }
+    }
+  ],
+  "badges": [
+    {
+      "id": "first_blood",
+      "name": "First Blood",
+      "description": "Won your first race",
+      "category": "racing"
+    },
+    {
+      "id": "race_veteran",
+      "name": "Race Veteran",
+      "description": "Completed 100 races",
+      "category": "racing"
+    },
+    {
+      "id": "crew_supporter",
+      "name": "Crew Supporter",
+      "description": "Donated 1000+ coins to your crew",
+      "category": "social"
+    },
+    {
+      "id": "junkyard_master",
+      "name": "Junkyard Master",
+      "description": "Found 50 rare parts in the junkyard",
+      "category": "economy"
+    },
+    {
+      "id": "perfectionist",
+      "name": "Perfectionist",
+      "description": "Won 10 races in a row",
+      "category": "racing"
+    }
+  ],
+  "achievements": [
+    {
+      "id": "first_race_win",
+      "name": "First Victory",
+      "description": "Win your first race",
+      "goal": 1,
+      "category": "racing"
+    },
+    {
+      "id": "races_100",
+      "name": "Century",
+      "description": "Complete 100 races",
+      "goal": 100,
+      "category": "racing"
+    },
+    {
+      "id": "crew_donate_1000",
+      "name": "Generous Donor",
+      "description": "Donate 1000 coins to your crew",
+      "goal": 1000,
+      "category": "social"
+    },
+    {
+      "id": "rare_parts_50",
+      "name": "Rare Collector",
+      "description": "Find 50 rare parts",
+      "goal": 50,
+      "category": "economy"
+    },
+    {
+      "id": "win_streak_10",
+      "name": "Unstoppable",
+      "description": "Win 10 races in a row",
+      "goal": 10,
+      "category": "racing"
+    }
+  ],
+  "perks": [
+    {
+      "id": "scrapper",
+      "name": "Scrapper",
+      "description": "Increase junkyard scrap value",
+      "category": "economy",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [1, 1, 2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 0 },
+        { "type": "streetCred", "value": 500 },
+        { "type": "streetCred", "value": 1500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "junkyard_scrap_value", "value": 0.10 },
+        { "type": "multiplier", "target": "junkyard_scrap_value", "value": 0.20 },
+        { "type": "multiplier", "target": "junkyard_scrap_value", "value": 0.30 }
+      ],
+      "icon": "🔩"
+    },
+    {
+      "id": "efficient_runner",
+      "name": "Efficient Runner",
+      "description": "Reduce supply run cooldowns",
+      "category": "economy",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [1, 1, 2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 0 },
+        { "type": "streetCred", "value": 750 },
+        { "type": "streetCred", "value": 2000 }
+      ],
+      "effects": [
+        { "type": "reduction", "target": "supply_run_cooldown", "value": 0.05 },
+        { "type": "reduction", "target": "supply_run_cooldown", "value": 0.10 },
+        { "type": "reduction", "target": "supply_run_cooldown", "value": 0.15 }
+      ],
+      "icon": "⏱️"
+    },
+    {
+      "id": "bargain_hunter",
+      "name": "Bargain Hunter",
+      "description": "Reduce store prices",
+      "category": "economy",
+      "reputationType": "streetCred",
+      "maxLevel": 2,
+      "costPerLevel": [2, 2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 1000 },
+        { "type": "streetCred", "value": 2500 }
+      ],
+      "effects": [
+        { "type": "reduction", "target": "store_prices", "value": 0.05 },
+        { "type": "reduction", "target": "store_prices", "value": 0.10 }
+      ],
+      "icon": "💵"
+    },
+    {
+      "id": "track_specialist_drag",
+      "name": "Track Specialist: Drag",
+      "description": "Bonus power on drag tracks",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 1,
+      "costPerLevel": [2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "track_power_Drag", "value": 0.05 }
+      ],
+      "icon": "🏁"
+    },
+    {
+      "id": "track_specialist_circuit",
+      "name": "Track Specialist: Circuit",
+      "description": "Bonus power on circuit tracks",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 1,
+      "costPerLevel": [2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "track_power_Circuit", "value": 0.05 }
+      ],
+      "icon": "🏎️"
+    },
+    {
+      "id": "track_specialist_offroad",
+      "name": "Track Specialist: Offroad",
+      "description": "Bonus power on offroad tracks",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 1,
+      "costPerLevel": [2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "track_power_Offroad", "value": 0.05 }
+      ],
+      "icon": "🏞️"
+    },
+    {
+      "id": "track_specialist_speedway",
+      "name": "Track Specialist: Speedway",
+      "description": "Bonus power on speedway tracks",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 1,
+      "costPerLevel": [2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "track_power_Speedway", "value": 0.05 }
+      ],
+      "icon": "🏟️"
+    },
+    {
+      "id": "track_specialist_hillclimb",
+      "name": "Track Specialist: Hillclimb",
+      "description": "Bonus power on hillclimb tracks",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 1,
+      "costPerLevel": [2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "track_power_Hillclimb", "value": 0.05 }
+      ],
+      "icon": "⛰️"
+    },
+    {
+      "id": "track_specialist_drift",
+      "name": "Track Specialist: Drift",
+      "description": "Bonus power on drift tracks",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 1,
+      "costPerLevel": [2],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "track_power_Drift", "value": 0.05 }
+      ],
+      "icon": "💨"
+    },
+    {
+      "id": "podium_finish",
+      "name": "Podium Finish",
+      "description": "Earn more coins from race wins",
+      "category": "racing",
+      "reputationType": "streetCred",
+      "maxLevel": 2,
+      "costPerLevel": [2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 1500 },
+        { "type": "streetCred", "value": 3000 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "race_win_coins", "value": 0.10 },
+        { "type": "multiplier", "target": "race_win_coins", "value": 0.20 }
+      ],
+      "icon": "🥇"
+    },
+    {
+      "id": "part_hunter",
+      "name": "Part Hunter",
+      "description": "Increased chance to find usable parts in junkyard",
+      "category": "utility",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [1, 2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 750 },
+        { "type": "streetCred", "value": 1750 },
+        { "type": "streetCred", "value": 3500 }
+      ],
+      "effects": [
+        { "type": "bonus", "target": "usable_part_chance", "value": 0.05 },
+        { "type": "bonus", "target": "usable_part_chance", "value": 0.10 },
+        { "type": "bonus", "target": "usable_part_chance", "value": 0.15 }
+      ],
+      "icon": "🔍"
+    },
+    {
+      "id": "fuel_master",
+      "name": "Fuel Master",
+      "description": "Reduce fuel consumption per race",
+      "category": "utility",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [2, 3, 4],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 1500 },
+        { "type": "streetCred", "value": 3000 },
+        { "type": "streetCred", "value": 5000 }
+      ],
+      "effects": [
+        { "type": "reduction", "target": "fuel_consumption", "value": 0.10 },
+        { "type": "reduction", "target": "fuel_consumption", "value": 0.20 },
+        { "type": "reduction", "target": "fuel_consumption", "value": 0.30 }
+      ],
+      "icon": "⛽"
+    },
+    {
+      "id": "drag_specialist",
+      "name": "Drag Specialist",
+      "description": "Earn bonus coins and Street Cred on drag track wins",
+      "category": "vehicle",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [2, 2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 },
+        { "type": "streetCred", "value": 1500 },
+        { "type": "streetCred", "value": 3000 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "race_coin_reward_Drag", "value": 0.10 },
+        { "type": "multiplier", "target": "race_coin_reward_Drag", "value": 0.20 },
+        { "type": "multiplier", "target": "race_coin_reward_Drag", "value": 0.30 }
+      ],
+      "icon": "🚀"
+    },
+    {
+      "id": "offroad_hardened",
+      "name": "Offroad Hardened",
+      "description": "Reduce durability damage taken on offroad tracks",
+      "category": "vehicle",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [2, 2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 },
+        { "type": "streetCred", "value": 1500 },
+        { "type": "streetCred", "value": 3000 }
+      ],
+      "effects": [
+        { "type": "reduction", "target": "durability_damage_Offroad", "value": 0.10 },
+        { "type": "reduction", "target": "durability_damage_Offroad", "value": 0.20 },
+        { "type": "reduction", "target": "durability_damage_Offroad", "value": 0.30 }
+      ],
+      "icon": "🛡️"
+    },
+    {
+      "id": "drift_artist",
+      "name": "Drift Artist",
+      "description": "Earn bonus Street Cred at car meets and drift events",
+      "category": "vehicle",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [2, 2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 750 },
+        { "type": "streetCred", "value": 2000 },
+        { "type": "streetCred", "value": 4000 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "cred_car_meet", "value": 0.10 },
+        { "type": "multiplier", "target": "cred_car_meet", "value": 0.20 },
+        { "type": "multiplier", "target": "cred_car_meet", "value": 0.30 }
+      ],
+      "icon": "💨"
+    },
+    {
+      "id": "street_legend",
+      "name": "Street Legend",
+      "description": "Reduce heat gain during street jobs",
+      "category": "vehicle",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [2, 2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 750 },
+        { "type": "streetCred", "value": 2000 },
+        { "type": "streetCred", "value": 4000 }
+      ],
+      "effects": [
+        { "type": "reduction", "target": "heat_gain_Street", "value": 0.10 },
+        { "type": "reduction", "target": "heat_gain_Street", "value": 0.20 },
+        { "type": "reduction", "target": "heat_gain_Street", "value": 0.30 }
+      ],
+      "icon": "🌡️"
+    },
+    {
+      "id": "circuit_ace",
+      "name": "Circuit Ace",
+      "description": "Earn a podium bonus on circuit track wins",
+      "category": "vehicle",
+      "reputationType": "streetCred",
+      "maxLevel": 3,
+      "costPerLevel": [2, 2, 3],
+      "unlockRequirements": [
+        { "type": "streetCred", "value": 500 },
+        { "type": "streetCred", "value": 1500 },
+        { "type": "streetCred", "value": 3000 }
+      ],
+      "effects": [
+        { "type": "multiplier", "target": "race_coin_reward_Circuit", "value": 0.10 },
+        { "type": "multiplier", "target": "race_coin_reward_Circuit", "value": 0.20 },
+        { "type": "multiplier", "target": "race_coin_reward_Circuit", "value": 0.30 }
+      ],
+      "icon": "🏆"
+    }
+  ],
+  "version": 2
+}
