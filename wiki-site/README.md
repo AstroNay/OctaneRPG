@@ -10,13 +10,15 @@ npm run dev      # http://localhost:4321
 npm run build    # static output in dist/
 ```
 
-## Cloudflare Pages
+## Cloudflare
+
+Deployed as a Workers static-assets project; `wrangler.jsonc` serves `dist/`.
 
 | Setting | Value |
 |---|---|
 | Root directory | `wiki-site` |
 | Build command | `npm run build` |
-| Build output directory | `dist` |
+| Deploy command | `npx wrangler deploy` |
 | Node version | 22 (`.node-version`) |
 
 Point `wiki.octanerpg.com` at the project. Pushes to `main` redeploy.
