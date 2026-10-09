@@ -14,7 +14,7 @@ export default defineConfig({
         { icon: 'discord', label: 'Discord', href: 'https://discord.octanerpg.com/' },
         { icon: 'external', label: 'octanerpg.com', href: 'https://octanerpg.com/' },
       ],
-      logo: { src: './src/assets/logo.png', alt: 'OctaneRPG' },
+      components: { SiteTitle: './src/components/SiteTitle.astro' },
       favicon: '/favicon.png',
       sidebar: [
         { label: 'Home', slug: 'index' },

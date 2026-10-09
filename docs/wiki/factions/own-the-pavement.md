@@ -7,8 +7,8 @@ category: Factions
 
 > A loud, unstable swarm that mistakes attention for respect.
 
-**Leader:** [Flauntive](../characters/flauntive.md) (the latest of many)
-**Home turf:** swarmed meets, back alleys, side streets at night
+**Leader:** [Flauntive](../characters/flauntive.md) (the latest of many)  
+**Home turf:** swarmed meets, back alleys, side streets at night  
 **Joinable?** No. You can only earn their respect.
 
 ## The name

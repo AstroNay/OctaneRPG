@@ -7,8 +7,7 @@
   --sl-border-radius: 12px;
 }
 
-:root,
-:root[data-theme='dark'] {
+:root:not([data-theme='light']) {
   --sl-color-accent-low: #45223b; /* accent-soft over the background */
   --sl-color-accent: #ff5db1; /* sakura pink */
   --sl-color-accent-high: #ffd1e8; /* links */
@@ -24,7 +23,8 @@
   --sl-color-black: #11121a; /* bg */
 }
 
-/* Light mode is not in the guidelines; pink is deepened so text stays readable. */
+/* Light mode is not in the guidelines: Starlight's light greys and white background,
+   with the pink deepened so links stay readable. */
 :root[data-theme='light'] {
   --sl-color-accent-low: #ffd9ec;
   --sl-color-accent: #c4237f;

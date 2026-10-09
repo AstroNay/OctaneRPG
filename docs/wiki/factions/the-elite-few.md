@@ -7,8 +7,8 @@ category: Factions
 
 > A low-drama family of skilled outcasts who communicate quietly, drive precisely and let consistency do the talking.
 
-**Founders:** [Sweets](../characters/sweets.md) and [Panda](../characters/panda.md)
-**Home turf:** [the docks](../world/the-docks.md), quiet late-night routes, TEF-hosted meets
+**Founders:** [Sweets](../characters/sweets.md) and [Panda](../characters/panda.md)  
+**Home turf:** [the docks](../world/the-docks.md), quiet late-night routes, TEF-hosted meets  
 **Joinable?** No. You can only earn their respect.
 
 ## The name
