@@ -1,11 +1,46 @@
-/* OctaneRPG accent: sunset orange on a dark, slightly blue base. */
+/* OctaneRPG brand tokens, mirrored from octanerpg.com (styles.css). */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Press+Start+2P&family=Space+Grotesk:wght@500;700&display=swap');
+
 :root {
-  --sl-color-accent-low: #3a1d0a;
-  --sl-color-accent: #d2570c;
-  --sl-color-accent-high: #ffb27a;
+  --sl-font: 'DM Sans', system-ui, sans-serif;
+  --octane-display: 'Space Grotesk', 'DM Sans', system-ui, sans-serif;
+  --octane-pixel: 'Press Start 2P', ui-monospace, monospace;
 }
+
+/* Dark is the brand default. */
+:root,
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #3a1020;
+  --sl-color-accent: #ff315d;
+  --sl-color-accent-high: #ff8fab;
+
+  --sl-color-white: #f7f2f5;
+  --sl-color-gray-1: #e6dfe3;
+  --sl-color-gray-2: #c9c0c6;
+  --sl-color-gray-3: #aaa1ad;
+  --sl-color-gray-4: #6e6575;
+  --sl-color-gray-5: #2d2833;
+  --sl-color-gray-6: #201c26;
+  --sl-color-gray-7: #17151d;
+  --sl-color-black: #0d0c11;
+}
+
 :root[data-theme='light'] {
-  --sl-color-accent-low: #ffd9bd;
-  --sl-color-accent: #b84a06;
-  --sl-color-accent-high: #6b2a03;
+  --sl-color-accent-low: #ffd9e2;
+  --sl-color-accent: #d6224f;
+  --sl-color-accent-high: #8f1235;
 }
+
+h1, h2, h3, h4 {
+  font-family: var(--octane-display);
+  letter-spacing: -0.01em;
+}
+
+.site-title {
+  font-family: var(--octane-pixel);
+  font-size: 0.8rem;
+}
+
+/* Hub tables read as link grids, so give them room. */
+.sl-markdown-content table { width: 100%; }
+.sl-markdown-content ::selection { background: rgb(255 49 93 / 60%); color: #fff; }
