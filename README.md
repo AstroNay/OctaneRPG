@@ -11,6 +11,7 @@ as a Discord bot; it is now becoming a **standalone game**.
 ## Links
 
 - 🌐 Website and game: <https://octanerpg.com/>
+- 📖 Wiki (guides, world and lore): <https://wiki.octanerpg.com/>
 - 💬 Discord (alpha testing, support): <https://discord.octanerpg.com/>
 <!-- TODO(Nay): add Bluesky and Ko-fi URLs here -->
 
@@ -32,7 +33,7 @@ The bot is a read-only window onto the Discord version of the game. Nothing it d
 | `/help`, `/info`, `/start` | Help, bot info, and where the game went |
 
 Every other command from the Discord version has been removed; the old slash commands disappear from the
-Discord picker once the bot re-registers its commands. See the [player wiki](docs/wiki/index.md) for how the
+Discord picker once the bot re-registers its commands. See the [player wiki](https://wiki.octanerpg.com/) for how the
 game's systems work.
 
 ## Running the bot
