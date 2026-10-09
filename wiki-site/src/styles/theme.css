@@ -1,11 +1,66 @@
-/* OctaneRPG accent: sunset orange on a dark, slightly blue base. */
+/* OctaneRPG brand tokens, from "OctaneRPG Brand Guidelines" (AstroGames vault).
+   Dark is the default; pink leads, purple supports. */
 :root {
-  --sl-color-accent-low: #3a1d0a;
-  --sl-color-accent: #d2570c;
-  --sl-color-accent-high: #ffb27a;
+  --sl-font: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --octane-accent-text: rgba(255, 209, 232, 0.92);
+  --octane-purple: #b26bff;
+  --sl-border-radius: 12px;
 }
+
+:root,
+:root[data-theme='dark'] {
+  --sl-color-accent-low: #45223b; /* accent-soft over the background */
+  --sl-color-accent: #ff5db1; /* sakura pink */
+  --sl-color-accent-high: #ffd1e8; /* links */
+
+  --sl-color-white: rgba(255, 255, 255, 0.92);
+  --sl-color-gray-1: #e4e5ea;
+  --sl-color-gray-2: #c7c9d2;
+  --sl-color-gray-3: #adaeb8;
+  --sl-color-gray-4: #6b6f85;
+  --sl-color-gray-5: #272a3b;
+  --sl-color-gray-6: #171925; /* surface-1 */
+  --sl-color-gray-7: #131521;
+  --sl-color-black: #11121a; /* bg */
+}
+
+/* Light mode is not in the guidelines; pink is deepened so text stays readable. */
 :root[data-theme='light'] {
-  --sl-color-accent-low: #ffd9bd;
-  --sl-color-accent: #b84a06;
-  --sl-color-accent-high: #6b2a03;
+  --sl-color-accent-low: #ffd9ec;
+  --sl-color-accent: #c4237f;
+  --sl-color-accent-high: #8a1359;
+  --octane-accent-text: #8a1359;
+}
+
+/* Layered glows, not flat black. */
+:root:not([data-theme='light']) body {
+  background-image:
+    radial-gradient(900px 500px at 85% 10%, rgba(255, 93, 177, 0.14), transparent 60%),
+    radial-gradient(700px 380px at 15% 0%, rgba(178, 107, 255, 0.1), transparent 55%),
+    radial-gradient(600px 320px at 30% 85%, rgba(255, 209, 232, 0.06), transparent 60%);
+  background-attachment: fixed;
+}
+
+.site-title {
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sl-markdown-content {
+  letter-spacing: 0.15px;
+}
+
+.sl-markdown-content :is(h1, h2, h3, h4) {
+  color: var(--octane-accent-text);
+}
+
+.sl-markdown-content h2 {
+  padding-bottom: 0.3rem;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, rgba(255, 93, 177, 0.55), rgba(178, 107, 255, 0.35)) 1;
+}
+
+.sl-markdown-content :is(pre, aside, details) {
+  border-radius: 12px;
 }
