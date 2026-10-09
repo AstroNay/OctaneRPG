@@ -1,0 +1,11 @@
+/* OctaneRPG accent: sunset orange on a dark, slightly blue base. */
+:root {
+  --sl-color-accent-low: #3a1d0a;
+  --sl-color-accent: #d2570c;
+  --sl-color-accent-high: #ffb27a;
+}
+:root[data-theme='light'] {
+  --sl-color-accent-low: #ffd9bd;
+  --sl-color-accent: #b84a06;
+  --sl-color-accent-high: #6b2a03;
+}
