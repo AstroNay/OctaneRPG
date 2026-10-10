@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require('discord.js');
-const { getSupabaseClient } = require('./supabase/client');
 
 async function getLeaderboardEmbed(leaderboardData, interaction, page = 0) {
     const pageSize = 10;
@@ -10,12 +9,6 @@ async function getLeaderboardEmbed(leaderboardData, interaction, page = 0) {
         return { embed: new EmbedBuilder().setDescription('No data available for this page.') };
     }
 
-    const guildIds = pageData.map(stats => stats._id);
-    const sb = getSupabaseClient();
-    const { data: guildRows } = guildIds.length > 0
-        ? await sb.from('guild_settings').select('guild_id, name').in('guild_id', guildIds)
-        : { data: [] };
-    const guilds = guildRows || [];
     let metricName = interaction.options.getString('metric');
     if (metricName === 'carmeets') {
         metricName = 'Total Attendees';
@@ -30,7 +23,7 @@ async function getLeaderboardEmbed(leaderboardData, interaction, page = 0) {
         .setColor(0x00AE86)
         .setDescription(pageData.map((guildDoc, index) => {
             const guildName = guildDoc?.name || 'Unknown Guild';
-            // getTopGuilds returns GuildSettings documents directly
+            // getTopGuilds (GET /guild-stats/top) returns { guildId, name, totalXp, totalCoins, totalCarMeets }
             let totalValue = 0;
             if (metricName === 'XP Earned') totalValue = guildDoc?.totalXp || 0;
             else if (metricName === 'Coins Earned') totalValue = guildDoc?.totalCoins || 0;

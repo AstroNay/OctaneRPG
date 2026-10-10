@@ -58,11 +58,7 @@ module.exports = {
                     }
                 } catch (vehicleError) {
                     logger.debug(`Vehicle API failed, using fallback: ${vehicleError.message}`);
-                    // Fallback: try to get from Supabase
-                    const { tables } = require('../utils/supabase');
-                    const { mapPlayerVehicleRow } = require('../utils/supabase/mappers');
-                    const row = await tables.playerVehicles.getActiveVehicle(profile.userId);
-                    playerVehicle = mapPlayerVehicleRow(row);
+                    playerVehicle = null;
                 }
             }
             
@@ -141,11 +137,9 @@ async function profileEmbed(profile, playerVehicle, opts = {}) {
     const xpBooster = boosters.booster_xp ? 'Active' : 'Inactive';
     const luckBooster = boosters.booster_luck ? 'Active' : 'Inactive';
     const pfp = profile.settings.pfpImage;
-    const { getSupabaseClient } = require('../utils/supabase');
-    const sb = getSupabaseClient();
-    const { data: vehicleRows } = await sb.from('player_vehicles').select('wins, losses').eq('user_id', profile.userId);
-    const trackWins = (vehicleRows || []).reduce((acc, v) => acc + (v.wins || 0), 0);
-    const trackLosses = (vehicleRows || []).reduce((acc, v) => acc + (v.losses || 0), 0);
+    const raceRecord = await api.getRaceRecord(profile.userId).catch(() => ({ wins: 0, losses: 0 }));
+    const trackWins = raceRecord.wins || 0;
+    const trackLosses = raceRecord.losses || 0;
     
     // Identity system - Street Cred & Infamy
     const streetCred = profile.reputation || 0;

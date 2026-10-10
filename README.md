@@ -42,8 +42,8 @@ For anyone who wants to look at the code or self-host a read-only viewer.
 
 - Node.js 20.x
 - A Discord application and bot token
-- Access to the data the bot reads (a Supabase project and the OctaneAPI it was built against; neither is
-  included in this repository)
+- The OctaneAPI the bot reads from (`API_URL` and `API_KEY_BOT`; the API is not included in this repository).
+  The bot has no database access of its own.
 
 ```bash
 cd bot

@@ -1,7 +1,5 @@
 const BaseAPIClient = require('../baseClient');
 const { getLogger } = require('../../logging');
-const { tables } = require('../../supabase');
-const { mapPlayerItemRow } = require('../../supabase/mappers');
 
 class InventoryClient extends BaseAPIClient {
   async getInventory(userId) {
@@ -9,9 +7,8 @@ class InventoryClient extends BaseAPIClient {
       return await this._get(`/players/${userId}/inventory`);
     } catch (error) {
       const logger = await getLogger();
-      logger.warn(`API fallback to Supabase for inventory ${userId}`);
-      const items = await tables.playerItems.getPlayerItems(userId);
-      return { inventory: (items || []).map(mapPlayerItemRow) };
+      logger.error(`API unavailable for inventory ${userId}`);
+      throw error;
     }
   }
 
@@ -98,15 +95,8 @@ class InventoryClient extends BaseAPIClient {
       return await this._get(`/players/${userId}/boosters`);
     } catch (error) {
       const logger = await getLogger();
-      logger.warn(`API fallback to Supabase for active boosters ${userId}`);
-      const boosterIds = ['booster_xp', 'booster_coins', 'booster_luck'];
-      const items = await tables.playerItems.getPlayerItems(userId);
-      const now = new Date();
-      const result = {};
-      (items || [])
-        .filter(i => boosterIds.includes(i.item_id) && (!i.expires_at || new Date(i.expires_at) > now))
-        .forEach(i => { result[i.item_id] = i.expires_at ? new Date(i.expires_at) : null; });
-      return result;
+      logger.error(`API unavailable for active boosters ${userId}`);
+      throw error;
     }
   }
 

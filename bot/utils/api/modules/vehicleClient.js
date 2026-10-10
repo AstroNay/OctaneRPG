@@ -1,7 +1,5 @@
 const BaseAPIClient = require('../baseClient');
 const { getLogger } = require('../../logging');
-const { tables } = require('../../supabase');
-const { mapPlayerVehicleRow } = require('../../supabase/mappers');
 
 class VehicleClient extends BaseAPIClient {
   async getBrowsableVehicles(playerLevel = null) {
@@ -40,9 +38,8 @@ class VehicleClient extends BaseAPIClient {
       return await this._get(`/players/${userId}/vehicles`);
     } catch (error) {
       const logger = await getLogger();
-      logger.warn(`API fallback to Supabase for garage ${userId}`);
-      const rows = await tables.playerVehicles.getPlayerVehicles(userId);
-      return (rows || []).map(mapPlayerVehicleRow);
+      logger.error(`API unavailable for garage ${userId}`);
+      throw error;
     }
   }
 
@@ -55,9 +52,8 @@ class VehicleClient extends BaseAPIClient {
       return null;
     } catch (error) {
       const logger = await getLogger();
-      logger.warn(`API fallback to Supabase for active vehicle ${userId}`);
-      const row = await tables.playerVehicles.getActiveVehicle(userId);
-      return mapPlayerVehicleRow(row);
+      logger.error(`API unavailable for active vehicle ${userId}`);
+      throw error;
     }
   }
 
@@ -116,9 +112,8 @@ class VehicleClient extends BaseAPIClient {
       return await this._get(`/players/${userId}/vehicles`);
     } catch (error) {
       const logger = await getLogger();
-      logger.warn(`API fallback to Supabase for player vehicles ${userId}`);
-      const rows = await tables.playerVehicles.getPlayerVehicles(userId);
-      return (rows || []).map(mapPlayerVehicleRow);
+      logger.error(`API unavailable for player vehicles ${userId}`);
+      throw error;
     }
   }
 

@@ -154,70 +154,6 @@ async function generateStatsText(profile, playerVehicle) {
     return { torqueText, horsepowerText, gripText, suspensionText, brakesText, aeroText, totalPowerText };
 }
 
-async function generatePlayers(profiles, fuelCost) {
-    const api = new GameAPI();
-    const { getSupabaseClient } = require('./supabase');
-    const { mapPlayerVehicleRow } = require('./supabase/mappers');
-    const sb = getSupabaseClient();
-    let playerVehicles = [];
-
-    for (const profile of profiles) {
-        const { data: vehicleRow } = await sb
-            .from('player_vehicles')
-            .select('*, player_vehicle_upgrades(*)')
-            .eq('user_id', profile.userId)
-            .eq('is_active', true)
-            .maybeSingle();
-        const playerVehicle = mapPlayerVehicleRow(vehicleRow);
-        
-        if (!playerVehicle) {
-            console.warn(`generatePlayers: No active vehicle for user ${profile.userId}`);
-            continue;
-        }
-        if (playerVehicle.status === 'Impounded') {
-            console.warn(`generatePlayers: Vehicle for user ${profile.userId} is impounded`);
-            continue;
-        }
-        
-        const adjustedFuelCost = Math.floor(fuelCost * (1 - (profile.stats.fuelEfficiency / 100)));
-        const logger = await getLogger();
-        logger.debug(`generatePlayers: ${profile.username} - Fuel Cost: ${adjustedFuelCost} - Current Fuel: ${playerVehicle.stats.currentFuel} - Fuel Efficiency: ${profile.stats.fuelEfficiency}`);
-        
-        if (playerVehicle.stats.currentFuel < adjustedFuelCost) {
-            console.warn(`generatePlayers: Not enough fuel for user ${profile.userId}`);
-            continue;
-        }
-        
-        try {
-            const vehicleStats = await api.getVehicleStats(profile.userId);
-            playerVehicles.push({
-                vehicleId: playerVehicle.vehicleId,
-                make: playerVehicle.make,
-                model: playerVehicle.model,
-                level: vehicleStats.level,
-                driverName: profile.username,
-                userId: profile.userId,
-                profile: profile, // Include profile for perk calculations
-                power: vehicleStats.totalPower,
-                stats: {
-                    horsepower: vehicleStats.total.horsepower,
-                    torque: vehicleStats.total.torque,
-                    grip: vehicleStats.total.grip,
-                    suspension: vehicleStats.total.suspension,
-                    brakes: vehicleStats.total.brakes,
-                    aero: vehicleStats.total.aero,
-                    currentFuel: vehicleStats.vehicleInfo.currentFuel
-                }
-            });
-        } catch (error) {
-            console.error(`generatePlayers: Error getting vehicle stats for user ${profile.userId}: ${error.message}`);
-            continue;
-        }
-    }
-
-    return playerVehicles;
-}
-
 async function generateAIOpponents(aiPower, level, count) {
     const api = new GameAPI();
     try {
@@ -278,63 +214,10 @@ async function simulateRace(vehicles, track, weather) {
     }
 }
 
-async function addRaceLevel(userId, level, winner, fuelCost) {
-    const { getSupabaseClient } = require('./supabase');
-    let logger = await getLogger();
-    const TIMEZONE = 'America/New_York';
-
-    try {
-        const sb = getSupabaseClient();
-
-        // Fetch active vehicle row
-        const { data: vehicleRow, error: fetchErr } = await sb
-            .from('player_vehicles')
-            .select('id, wins, losses, race_count, highest_level_unlocked')
-            .eq('user_id', userId)
-            .eq('is_active', true)
-            .maybeSingle();
-        if (fetchErr) throw fetchErr;
-        if (!vehicleRow) {
-            logger.warn(`addRaceLevel: No active vehicle found for user ${userId}`);
-            return;
-        }
-
-        const currentHighest = vehicleRow.highest_level_unlocked || 0;
-        logger.debug(`addRaceLevel: User ${userId}, Winner: ${winner}, Current Highest: ${currentHighest}, New Level: ${level}`);
-
-        const updates = {
-            race_count: (vehicleRow.race_count || 0) + 1,
-            last_race_date: DateTime.now().setZone(TIMEZONE).toJSDate().toISOString(),
-            updated_at: new Date().toISOString(),
-        };
-
-        if (level > currentHighest) {
-            updates.highest_level_unlocked = level;
-            logger.info(`addRaceLevel: Updated highest level to ${level} for user ${userId}`);
-        }
-
-        if (winner) {
-            updates.wins = (vehicleRow.wins || 0) + 1;
-        } else {
-            updates.losses = (vehicleRow.losses || 0) + 1;
-        }
-
-        const { error: updateErr } = await sb
-            .from('player_vehicles')
-            .update(updates)
-            .eq('id', vehicleRow.id);
-        if (updateErr) throw updateErr;
-    } catch (error) {
-        logger.error(`addRaceLevel: DB error for user ${userId}: ${error.message}`);
-    }
-}
-
 module.exports = {
-    generatePlayers,
     getWeatherCondition,
     generateAIOpponents,
     simulateRace,
-    addRaceLevel,
     generateStatsText,
     getVehicleStats,
     getUpgradeStats,
