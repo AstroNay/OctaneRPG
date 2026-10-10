@@ -45,6 +45,7 @@ class GameAPI {
   async getGuildPlayers(guildId) { return this.player.getGuildPlayers(guildId); }
   async getGuildStatistics(guildId) { return this.player.getGuildStatistics(guildId); }
   async getTopGuilds(metric) { return this.player.getTopGuilds(metric); }
+  async getRaceRecord(userId) { return this.player.getRaceRecord(userId); }
   async batchUpdateProfile(userId, updates) { return this.player.batchUpdateProfile(userId, updates); }
   async createProfileWithStarterVehicle(userId, guildId, username, profilePictureUrl, vehicleId) {
     return this.player.createProfileWithStarterVehicle(userId, guildId, username, profilePictureUrl, vehicleId);
@@ -124,6 +125,7 @@ class GameAPI {
   // Guild settings (guild metadata + bot config)
   async upsertGuildSettings(payload) { return this.guildSettings.upsertGuildSettings(payload); }
   async getGuildSettings(guildId) { return this.guildSettings.getGuildSettings(guildId); }
+  async deleteGuildSettings(guildId) { return this.guildSettings.deleteGuildSettings(guildId); }
 
   // API Status
   getAPIStatus() {

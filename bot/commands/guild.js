@@ -1,8 +1,6 @@
 const { SlashCommandBuilder, EmbedBuilder, AttachmentBuilder } = require('discord.js');
 const { GameAPI } = require('../utils/apiClient');
 const { getLogger } = require('../utils/logging');
-const { getSupabaseClient, tables } = require('../utils/supabase');
-const { mapGuildSettingsRow } = require('../utils/supabase/mappers');
 
 const { version: packageVersion } = require('../package.json');
 
@@ -17,14 +15,7 @@ module.exports = {
         try {
             const api = new GameAPI();
 
-            // Prefer API-backed guild settings (falls back to Supabase in the API client)
-            let guildSettings = null;
-            try {
-                guildSettings = await api.getGuildSettings(interaction.guild.id);
-            } catch (_) {
-                const row = await tables.guildSettings.getGuildSettings(interaction.guild.id);
-                guildSettings = mapGuildSettingsRow(row);
-            }
+            const guildSettings = await api.getGuildSettings(interaction.guild.id);
             if (!guildSettings) {
                 return interaction.reply('Guild settings not found.', { ephemeral: true });
             }
@@ -57,14 +48,8 @@ module.exports = {
             // Get guild statistics from API
             const guildStats = await api.getGuildStatistics(interaction.guild.id);
             
-            // Get guild vehicle race stats from Supabase
-            const sb = getSupabaseClient();
-            const userIds = guildStats.players.map(p => p.userId);
-            const { data: vehicleRows } = userIds.length > 0
-                ? await sb.from('player_vehicles').select('wins, losses').in('user_id', userIds)
-                : { data: [] };
-            const totalWins = (vehicleRows || []).reduce((acc, v) => acc + (v.wins || 0), 0);
-            const totalLosses = (vehicleRows || []).reduce((acc, v) => acc + (v.losses || 0), 0);
+            const totalWins = guildStats.totalWins || 0;
+            const totalLosses = guildStats.totalLosses || 0;
             const totalRaces = totalWins + totalLosses;
 
             

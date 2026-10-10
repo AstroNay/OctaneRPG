@@ -1,7 +1,6 @@
 const BaseAPIClient = require('../baseClient');
 const { getLogger } = require('../../logging');
 const apiMonitor = require('../apiMonitor');
-const { getSupabaseClient } = require('../../supabase');
 
 class PlayerClient extends BaseAPIClient {
   // Profile CRUD
@@ -181,24 +180,12 @@ class PlayerClient extends BaseAPIClient {
   }
 
   async getGuildLeaderboard(guildId, type = 'level') {
-    const logger = await getLogger();
-    logger.debug(`Using Supabase for guild leaderboard`);
-    const sb = getSupabaseClient();
-    let query = sb.from('players')
-      .select('user_id, username, xp, level, coins, reputation, crew_tag, join_date, last_message_date')
-      .eq('guild_id', guildId)
-      .eq('is_banned', false);
-    if (type === 'level') query = query.order('level', { ascending: false }).order('xp', { ascending: false });
-    else if (type === 'coins') query = query.order('coins', { ascending: false });
-    else if (type === 'xp') query = query.order('xp', { ascending: false });
-    else query = query.order('reputation', { ascending: false });
-    const { data, error: qErr } = await query;
-    if (qErr) throw new Error('[supabase:players] getGuildLeaderboard: ' + qErr.message);
-    return (data || []).map((r) => ({
-      userId: r.user_id, username: r.username, xp: r.xp, level: r.level,
-      coins: r.coins, reputation: r.reputation, crew: r.crew_tag,
-      joinDate: r.join_date, lastMessageDate: r.last_message_date,
-    }));
+    try {
+      return await this._get(`/guild-stats/${guildId}/leaderboard?type=${encodeURIComponent(type)}`);
+    } catch (error) {
+      await apiMonitor.recordFailure('playerClient.getGuildLeaderboard', error);
+      throw error;
+    }
   }
 
   async getPlayerCount() {
@@ -225,55 +212,31 @@ class PlayerClient extends BaseAPIClient {
   }
 
   async getGuildStatistics(guildId) {
-    const logger = await getLogger();
-    logger.debug(`Using Supabase for guild statistics`);
-    const sb = getSupabaseClient();
-    const { data, error: qErr } = await sb.from('players')
-      .select('user_id, username, coins, xp, daily_count, weekly_count')
-      .eq('guild_id', guildId);
-    if (qErr) throw new Error('[supabase:players] getGuildStatistics: ' + qErr.message);
-    const rows = data || [];
-    return {
-      players: rows.map((r) => ({ userId: r.user_id, username: r.username })),
-      playerCount: rows.length,
-      totalCoins: rows.reduce((sum, r) => sum + (r.coins || 0), 0),
-      totalXp: rows.reduce((sum, r) => sum + (r.xp || 0), 0),
-      totalDailyCount: rows.reduce((sum, r) => sum + (r.daily_count || 0), 0),
-      totalWeeklyCount: rows.reduce((sum, r) => sum + (r.weekly_count || 0), 0),
-    };
+    try {
+      return await this._get(`/guild-stats/${guildId}`);
+    } catch (error) {
+      await apiMonitor.recordFailure('playerClient.getGuildStatistics', error);
+      throw error;
+    }
   }
 
   async getTopGuilds(metric) {
-    const logger = await getLogger();
-    logger.debug(`Using Supabase for top guilds`);
-    const sb = getSupabaseClient();
+    try {
+      return await this._get(`/guild-stats/top?metric=${encodeURIComponent(metric || 'xp')}`);
+    } catch (error) {
+      await apiMonitor.recordFailure('playerClient.getTopGuilds', error);
+      throw error;
+    }
+  }
 
-    const { data: guilds, error: gErr } = await sb.from('guild_settings').select('guild_id, guild_name');
-    if (gErr) throw new Error('[supabase:guilds] getTopGuilds: ' + gErr.message);
-
-    const guildStats = await Promise.all((guilds || []).map(async (guild) => {
-      const { data: players } = await sb.from('players')
-        .select('user_id, xp, coins')
-        .eq('guild_id', guild.guild_id);
-
-      const rows = players || [];
-      const totalXp = rows.reduce((sum, r) => sum + (r.xp || 0), 0);
-      const totalCoins = rows.reduce((sum, r) => sum + (r.coins || 0), 0);
-
-      const { data: meets } = await sb.from('car_meets')
-        .select('id')
-        .eq('guild_id', guild.guild_id);
-      const totalCarMeets = (meets || []).length;
-
-      return { ...guild, totalXp, totalCoins, totalCarMeets, playerCount: rows.length };
-    }));
-
-    const metricMap = { xp: 'totalXp', coins: 'totalCoins', carmeets: 'totalCarMeets' };
-    const sortField = metricMap[metric] || 'totalXp';
-    return guildStats
-      .filter(g => g[sortField] > 0)
-      .sort((a, b) => b[sortField] - a[sortField])
-      .slice(0, 10);
+  /** Total race wins and losses across a player's vehicles. */
+  async getRaceRecord(userId) {
+    try {
+      return await this._get(`/guild-stats/record/${userId}`);
+    } catch (error) {
+      await apiMonitor.recordFailure('playerClient.getRaceRecord', error);
+      throw error;
+    }
   }
 
   async getInventory(userId) {

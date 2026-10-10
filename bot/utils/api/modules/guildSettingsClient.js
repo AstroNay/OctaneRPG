@@ -24,6 +24,15 @@ class GuildSettingsClient extends BaseAPIClient {
       throw error;
     }
   }
+
+  async deleteGuildSettings(guildId) {
+    try {
+      return await this._delete(`/guild-settings/${guildId}`);
+    } catch (error) {
+      await apiMonitor.recordFailure('guildSettingsClient.deleteGuildSettings', error);
+      throw error;
+    }
+  }
 }
 
 module.exports = GuildSettingsClient;

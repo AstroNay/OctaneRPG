@@ -1,7 +1,6 @@
 const { DateTime } = require('luxon');
 const { EmbedBuilder, PermissionFlagsBits } = require('discord.js');
 const { getLogger } = require('./logging');
-const { tables, getSupabaseClient } = require('./supabase');
 const { safeDeferReply, safeReply } = require('../utils/interactionUtils');
 const { GameAPI } = require('./api');
 const { assertWritable } = require('./readOnly');
@@ -335,73 +334,6 @@ async function levelUp(profile, interaction, postLevel, options = {}) {
     }
 }
 
-async function giveCoins(profile, coins, source) {
-    assertWritable('giveCoins');
-    let logger = await getLogger();
-    const api = new GameAPI();
-    if (!profile) {
-        logger.error('Profile not found');
-        return;
-    }
-
-    // Check active coins booster via API (degrade gracefully if API is down)
-    let coinsBooster = 1;
-    try {
-        const boosters = await api.inventory.getActiveBoosters(profile.userId);
-        coinsBooster = boosters?.booster_coins ? 2 : 1;
-    } catch (error) {
-        logger.debug(`${profile.userId} | giveCoins booster check failed: ${error?.message || error}`);
-    }
-    coins = Math.floor(coins * coinsBooster);
-
-    const { logCoinsEvent } = require('./inventoryEvents');
-    const beforeCoins = Number(profile.coins || 0);
-    const afterCoins = beforeCoins + Number(coins || 0);
-
-    profile.coins = afterCoins;
-    await api.updateProfile(profile.userId, { coins: afterCoins });
-
-    await logCoinsEvent({
-        userId: profile.userId,
-        delta: coins,
-        before: beforeCoins,
-        after: afterCoins,
-        reason: source ? `legacy:giveCoins:${source}` : 'legacy:giveCoins',
-        source: 'bot:core',
-        metadata: { coinsBooster },
-    });
-
-    logger.debug(`${profile.username} earned ${coins} coins with ${coinsBooster}x booster from ${source}`);
-}
-
-async function giveItem(profile, itemId, quantity, source) {
-    let logger = await getLogger();
-    const api = new GameAPI();
-    const itemData = await api.inventory.getStoreItem(itemId);
-    if (!itemData) {
-        logger.error(`Item not found: ${itemId}`);
-        return;
-    }
-
-    const { logInventoryEvent } = require('./inventoryEvents');
-
-    const existingRow = await tables.playerItems.getPlayerItem(profile.userId, itemId);
-    const before = existingRow ? (existingRow.quantity || 0) : 0;
-    await tables.playerItems.addItemQuantity(profile.userId, itemId, quantity);
-
-    await logInventoryEvent({
-        userId: profile.userId,
-        itemId,
-        delta: quantity,
-        quantityBefore: before,
-        quantityAfter: before + quantity,
-        reason: source ? `legacy:giveItem:${source}` : 'legacy:giveItem',
-        source: 'bot:core',
-    });
-
-    logger.debug(`${profile.username} earned ${quantity} ${itemData.name} from ${source}`);
-}
-
 async function purchaseItem(profile, itemId, quantity = 1) {
     const api = new GameAPI();
     try {
@@ -494,54 +426,6 @@ async function checkInventory(profile, itemId) {
     }
 }
 
-async function boosterExpired(profile) {
-    const now = new Date();
-    const boosterIds = ['booster_xp', 'booster_coins', 'booster_luck'];
-
-    try {
-        const { logInventoryEvent } = require('./inventoryEvents');
-        const sb = getSupabaseClient();
-
-        const { data: expired, error } = await sb
-            .from('player_items')
-            .select('*')
-            .eq('user_id', profile.userId)
-            .in('item_id', boosterIds)
-            .lte('expires_at', now.toISOString());
-
-        if (error) throw new Error(error.message);
-
-        for (const row of (expired || [])) {
-            const qty = Number(row.quantity || 1);
-            await logInventoryEvent({
-                userId: profile.userId,
-                itemId: row.item_id,
-                delta: -qty,
-                quantityBefore: qty,
-                quantityAfter: 0,
-                category: 'booster',
-                reason: 'booster:expired',
-                source: 'bot:core',
-                metadata: { expiresAt: row.expires_at },
-            });
-        }
-
-        if ((expired || []).length > 0) {
-            await sb
-                .from('player_items')
-                .delete()
-                .eq('user_id', profile.userId)
-                .in('item_id', boosterIds)
-                .lte('expires_at', now.toISOString());
-        }
-    } catch (error) {
-        const logger = await getLogger();
-        logger.debug(`Failed to clean up expired boosters for ${profile.userId}: ${error.message}`);
-    }
-
-    return true;
-}
-
 async function purchaseVehicle(profile, vehicle) {
     const api = new GameAPI();
     return api.vehicle.purchaseVehicle(profile.userId, vehicle._id || vehicle.id, vehicle.price);
@@ -567,13 +451,10 @@ module.exports = {
     calculatePassiveIncome,
     getItemDetails,
     giveXP,           // Used by race.js - now checks boosters via API
-    giveCoins,        // Used by race.js and daily/weekly - now checks boosters via API
     levelUp,          // For commands that award XP via API and need to announce
     withLevelUpCheck, // Wrap any XP-granting operation and auto-announce
-    giveItem,         // Used by updateData.js - creates PlayerItems
     checkInventory,   // Used by profile.js - now queries PlayerItem via API
     useItem,          // For item consumption with booster activation
-    boosterExpired,   // Clean up expired boosters from PlayerItem collection
     purchaseItem,     // For store purchases
     purchaseVehicle,  // For vehicle purchases
     sellVehicle       // For vehicle sales

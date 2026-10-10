@@ -7,7 +7,6 @@ const path = require('path');
 // Bot's own .env only.
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const { getSupabaseClient } = require('./utils/supabase');
 const { version: packageVersion } = require('./package.json');
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const token = NODE_ENV === 'production' ? process.env.TOKEN_PROD : process.env.TOKEN_DEV;
@@ -30,14 +29,6 @@ async function startBot() {
     }
 
     try {
-        try {
-            getSupabaseClient();
-            console.log('[supabase] Client initialized');
-        } catch (sbErr) {
-            console.error('[supabase] Failed to initialize Supabase:', sbErr.message);
-            process.exit(1);
-        }
-
         const supportGuildID = process.env.SUPPORT_GUILD_ID || process.env.GUILDID_SUPPORT || '';
         const devGuildID = process.env.DEV_GUILD_ID || process.env.GUILDID_DEV || process.env.GUILDID || '';
         const botVersion = process.env.BOT_VERSION || packageVersion;
@@ -71,8 +62,7 @@ async function startBot() {
             const startupTime = DateTime.now().setZone(TIMEZONE).toISO();
             let profilesCount = 0;
             try {
-                const { count } = await getSupabaseClient().from('players').select('*', { count: 'exact', head: true });
-                profilesCount = count ?? 0;
+                profilesCount = Number(await gameAPI.getPlayerCount()) || 0;
             } catch (_) {}
             logger.info(`${client.user.tag} connected | Guilds: ${client.guilds.cache.size} | Profiles: ${profilesCount} | Commands: ${client.commands.size} | Bot Version: ${botVersion}`);
             client.user.setPresence({ activities: [{ name: 'OctaneRPG.com | /help' }], status: 'dnd' });
@@ -87,7 +77,7 @@ async function startBot() {
         client.on('guildDelete', async guild => {
             try {
                 if (guild.id === supportGuildID || guild.id === devGuildID) return;
-                await getSupabaseClient().from('guild_settings').delete().eq('guild_id', guild.id);
+                await gameAPI.deleteGuildSettings(guild.id);
                 logger.info(`Left guild ${guild.name}`);
             } catch (error) {
                 logger.error('guildDelete: '+error);
@@ -208,15 +198,6 @@ async function startBot() {
                 if (guildSettings && guildSettings.allowedChannels.length > 0 && !guildSettings.allowedChannels.includes(interaction.channelId)) {
                     console.log('Channel not allowed');
                     return await safeReply(interaction, { content: t("bot_channel", interaction.locale), ephemeral: true });
-                }
-        
-                if (profile && !isReadOnlyMode()) {
-                    getSupabaseClient()
-                        .from('players')
-                        .update({ last_message_date: new Date().toISOString() })
-                        .eq('user_id', interaction.user.id)
-                        .then(() => {})
-                        .catch(() => {});
                 }
         
                 try {

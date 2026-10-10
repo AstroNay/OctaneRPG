@@ -2,7 +2,6 @@ const { SlashCommandBuilder, ChannelType, PermissionFlagsBits } = require('disco
 const { GameAPI } = require('../utils/api');
 const { getLogger } = require('../utils/logging');
 const { safeReply } = require('../utils/interactionUtils');
-const { tables } = require('../utils/supabase');
 
 function normalizeHexColor(input) {
     if (!input) return null;
@@ -102,7 +101,7 @@ module.exports = {
                 .map(s => s.trim())
                 .filter(Boolean);
 
-            await tables.guildSettings.upsertGuildSettings(settings);
+            await api.upsertGuildSettings(settings);
             logger.debug(`Allowed channels updated: ${settings.allowedChannels}`);
             return safeReply(interaction, { content: 'Allowed channels updated.', ephemeral: true }, true);
         }
@@ -178,7 +177,7 @@ module.exports = {
                 settings.levelupTemplate = String(template).slice(0, 1000);
             }
 
-            await tables.guildSettings.upsertGuildSettings(settings);
+            await api.upsertGuildSettings(settings);
             logger.debug(`Level-up settings updated: enabled=${settings.levelupMessages} channel=${settings.levelupChannel} color=${settings.levelupColor} cadence=${settings.levelupAnnounceEvery}`);
             return safeReply(interaction, { content: 'Level-up settings updated.', ephemeral: true }, true);
         }

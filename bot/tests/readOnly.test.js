@@ -4,7 +4,6 @@ const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 
 const readOnly = require('../utils/readOnly');
 const { buildRetroRedirectEmbed } = require('../utils/retroRedirect');
-const { _resetClient, getSupabaseClient } = require('../utils/supabase/client');
 const BaseAPIClient = require('../utils/api/baseClient');
 
 function withMode(value, fn) {
@@ -69,21 +68,6 @@ test('redirect embed has no stale copy and two link buttons', () => {
     const text = JSON.stringify(embeds[0].toJSON());
     assert.doesNotMatch(text, /carries over|OctaneRetro|guest play|browser/i);
     assert.deepEqual(components[0].components.map(c => c.data.label), ['Visit OctaneRPG', 'Join the Discord']);
-});
-
-test('supabase backstop: player-table writes throw, reads and guild_settings pass through', () => {
-    process.env.SUPABASE_URL = 'http://127.0.0.1:1';
-    process.env.SUPABASE_KEY = 'test-key';
-    _resetClient();
-    const sb = getSupabaseClient();
-    withMode('true', () => {
-        for (const m of ['insert', 'update', 'upsert', 'delete']) {
-            assert.throws(() => sb.from('players')[m]({}), readOnly.ReadOnlyError, m);
-        }
-        assert.doesNotThrow(() => sb.from('players').select('*').eq('user_id', '1'));
-        assert.doesNotThrow(() => sb.from('guild_settings').upsert({ guild_id: '1' }));
-    });
-    withMode('false', () => assert.doesNotThrow(() => sb.from('players').update({})));
 });
 
 test('api backstop: non-GET blocked except read-by-POST and guild settings', async () => {
